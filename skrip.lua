@@ -1,19 +1,15 @@
--- Pastikan ini adalah LocalScript di StarterPlayerScripts
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Hapus GUI lama jika ada
 if playerGui:FindFirstChild("SpeedGUI") then
     playerGui.SpeedGUI:Destroy()
 end
 
--- Create main GUI
 local gui = Instance.new("ScreenGui")
 gui.Name = "SpeedGUI"
 gui.ResetOnSpawn = false
 gui.Parent = playerGui
 
--- Main container frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
 mainFrame.Size = UDim2.new(0, 220, 0, 180)
@@ -22,12 +18,10 @@ mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
 mainFrame.BackgroundTransparency = 0.2
 mainFrame.BorderSizePixel = 0
 
--- Add rounded corners
 local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 8)
 corner.Parent = mainFrame
 
--- Add drop shadow
 local shadow = Instance.new("ImageLabel")
 shadow.Name = "Shadow"
 shadow.Image = "rbxassetid://1316045217"
@@ -41,7 +35,6 @@ shadow.BackgroundTransparency = 1
 shadow.ZIndex = -1
 shadow.Parent = mainFrame
 
--- Title bar
 local titleBar = Instance.new("Frame")
 titleBar.Name = "TitleBar"
 titleBar.Size = UDim2.new(1, 0, 0, 30)
@@ -64,7 +57,6 @@ titleText.Font = Enum.Font.GothamBold
 titleText.TextSize = 14
 titleText.TextXAlignment = Enum.TextXAlignment.Left
 
--- Minimize button
 local minimizeButton = Instance.new("TextButton")
 minimizeButton.Name = "MinimizeButton"
 minimizeButton.Size = UDim2.new(0, 30, 0, 30)
@@ -75,14 +67,12 @@ minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 minimizeButton.Font = Enum.Font.GothamBold
 minimizeButton.TextSize = 18
 
--- Content frame (will be hidden when minimized)
 local contentFrame = Instance.new("Frame")
 contentFrame.Name = "ContentFrame"
 contentFrame.Size = UDim2.new(1, 0, 1, -30)
 contentFrame.Position = UDim2.new(0, 0, 0, 30)
 contentFrame.BackgroundTransparency = 1
 
--- Speed input
 local textBox = Instance.new("TextBox")
 textBox.Name = "SpeedInput"
 textBox.Size = UDim2.new(0.8, 0, 0, 30)
@@ -98,7 +88,6 @@ local textBoxCorner = Instance.new("UICorner")
 textBoxCorner.CornerRadius = UDim.new(0, 4)
 textBoxCorner.Parent = textBox
 
--- Speed display
 local speedDisplay = Instance.new("TextLabel")
 speedDisplay.Name = "SpeedDisplay"
 speedDisplay.Size = UDim2.new(0.8, 0, 0, 20)
@@ -109,7 +98,6 @@ speedDisplay.TextColor3 = Color3.fromRGB(200, 200, 200)
 speedDisplay.Font = Enum.Font.Gotham
 speedDisplay.TextSize = 14
 
--- Apply button
 local applyButton = Instance.new("TextButton")
 applyButton.Name = "ApplyButton"
 applyButton.Size = UDim2.new(0.8, 0, 0, 30)
@@ -123,7 +111,6 @@ local buttonCorner = Instance.new("UICorner")
 buttonCorner.CornerRadius = UDim.new(0, 4)
 buttonCorner.Parent = applyButton
 
--- Parent all elements
 titleText.Parent = titleBar
 minimizeButton.Parent = titleBar
 titleBar.Parent = mainFrame
@@ -135,7 +122,6 @@ contentFrame.Parent = mainFrame
 
 mainFrame.Parent = gui
 
--- Minimize functionality
 local isMinimized = false
 local originalSize = mainFrame.Size
 
@@ -153,7 +139,6 @@ minimizeButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Drag functionality
 local dragging = false
 local dragInput, dragStart, startPos
 
@@ -184,7 +169,6 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
     end
 end)
 
--- Speed control functionality
 local function updateWalkSpeed()
     local speedValue = tonumber(textBox.Text)
     
@@ -220,7 +204,6 @@ textBox.FocusLost:Connect(function(enterPressed)
     end
 end)
 
--- Handle character respawns
 player.CharacterAdded:Connect(function(character)
     local humanoid = character:WaitForChild("Humanoid")
     speedDisplay.Text = "Current: "..humanoid.WalkSpeed.." studs"
