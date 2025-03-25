@@ -1,89 +1,85 @@
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+-- Pastikan ini adalah LocalScript dan ditempatkan di StarterPlayerScripts
+
+-- Tunggu hingga game sepenuhnya dimuat
+repeat wait() until game:IsLoaded()
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
+-- Load RayField UI Library
+local success, Rayfield = pcall(function()
+    return loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+end)
 
+if not success then
+    warn("Gagal memuat RayField UI Library")
+    return
+end
+
+-- Buat antarmuka UI
 local Window = Rayfield:CreateWindow({
-    Name = "Character Speed Controller",
-    LoadingTitle = "Speed Control",
-    LoadingSubtitle = "by YourName",
+    Name = "Pengatur Kecepatan Karakter",
+    LoadingTitle = "Memuat Pengatur Kecepatan...",
+    LoadingSubtitle = "Silakan tunggu",
     ConfigurationSaving = {
         Enabled = false,
     },
     KeySystem = false,
 })
 
-local MainTab = Window:CreateTab("Main", 4483362458)
+-- Buat tab utama
+local MainTab = Window:CreateTab("Pengaturan Utama")
 
-local SpeedSlider = MainTab:CreateSection("Speed Adjustment")
+-- Tunggu hingga karakter muncul
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
 
-local slider = MainTab:CreateSlider({
-    Name = "Walk Speed",
+-- Buat slider kecepatan
+local speedSlider = MainTab:CreateSlider({
+    Name = "Kecepatan Berjalan",
     Range = {16, 100},
     Increment = 1,
     Suffix = "studs",
     CurrentValue = humanoid.WalkSpeed,
-    Flag = "SpeedSlider",
     Callback = function(value)
-        humanoid.WalkSpeed = value
-    end,
-})
-
-local autoRunToggle = MainTab:CreateToggle({
-    Name = "Auto Run",
-    CurrentValue = false,
-    Flag = "AutoRunToggle",
-    Callback = function(state)
-        if state then
-            humanoid.WalkSpeed = 50
-            slider:Set(50)
+        if humanoid then
+            humanoid.WalkSpeed = value
         else
-            humanoid.WalkSpeed = 16
-            slider:Set(16)
+            Rayfield:Notify({
+                Title = "Error",
+                Content = "Humanoid tidak ditemukan!",
+                Duration = 3,
+            })
         end
     end,
 })
 
+-- Tombol reset
 MainTab:CreateButton({
-    Name = "Reset to Default",
+    Name = "Reset Ke Default",
     Callback = function()
-        humanoid.WalkSpeed = 16
-        slider:Set(16)
-        autoRunToggle:Set(false)
-        Rayfield:Notify({
-            Title = "Speed Reset",
-            Content = "Your speed has been reset to default",
-            Duration = 3,
-            Image = 4483362458,
-        })
+        if humanoid then
+            humanoid.WalkSpeed = 16
+            speedSlider:Set(16)
+            Rayfield:Notify({
+                Title = "Berhasil",
+                Content = "Kecepatan direset ke 16 studs",
+                Duration = 3,
+            })
+        end
     end,
 })
 
-local InfoSection = MainTab:CreateSection("Information")
-
-MainTab:CreateLabel("Current Speed: " .. humanoid.WalkSpeed .. " studs")
-
-humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-    local label = InfoSection:FindFirstChild("CurrentSpeedLabel")
-    if label then
-        label:Set("Current Speed: " .. humanoid.WalkSpeed .. " studs")
-    end
-end)
-
+-- Handle respawn karakter
 player.CharacterAdded:Connect(function(newCharacter)
     character = newCharacter
     humanoid = newCharacter:WaitForChild("Humanoid")
     
-    slider:Set(humanoid.WalkSpeed)
-    
-    if autoRunToggle.CurrentValue then
-        humanoid.WalkSpeed = 50
-        slider:Set(50)
-    end
+    -- Update slider saat karakter respawn
+    speedSlider:Set(humanoid.WalkSpeed)
 end)
 
+-- Keybind untuk toggle UI
 local Input = game:GetService("UserInputService")
 local uiHidden = false
 
@@ -91,16 +87,17 @@ MainTab:CreateKeybind({
     Name = "Toggle UI",
     CurrentKeybind = "U",
     HoldToInteract = false,
-    Flag = "UIKeybind",
     Callback = function()
         uiHidden = not uiHidden
         Window:Toggle(uiHidden)
     end,
 })
 
+-- Notifikasi saat pertama kali load
 Rayfield:Notify({
-    Title = "Speed Control Loaded",
-    Content = "Press U to toggle the UI",
+    Title = "Pengatur Kecepatan Aktif",
+    Content = "Tekan U untuk menampilkan/menyembunyikan UI",
     Duration = 5,
-    Image = 4483362458,
 })
+
+print("Pengatur kecepatan berhasil dimuat!")
